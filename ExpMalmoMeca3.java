@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//package expmalmomeca1;
+//package expmalmomeca3;
 import com.microsoft.msr.malmo.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * @author carol
  */
 
-public class ExpMalmoMeca2 {
+public class ExpMalmoMeca3 {
 
     static
     {
@@ -24,9 +24,41 @@ public class ExpMalmoMeca2 {
      */
     ////public static void main(String argv[])
     ////public static void main(String[] args) {
+    
+    //Essas funções deveriam ser usadas no meio do XML porém tivel alguns problemas, tentarei usa-las novamente mais a diante
+    public String GenCuboid(int x1, int y1, int z1, int x2, int y2, int z2, String blocktype){
+        return "<DrawCuboid x1=" + Integer.toString(x1)  + " y1=" + Integer.toString(y1) + " +z1=" + Integer.toString(z1) + " x2=" + Integer.toString(x2) + " +y2=" + Integer.toString(y2) + " +z2=" + Integer.toString(z2) + " +type=" + blocktype + "/>";
+    }
+    
+    public String Menger(int xorg, int  yorg, int zorg, int size, String blocktype, String holetype ){
+        String genstring = "";
+        //draw solid chunk
+       genstring = GenCuboid(xorg,yorg,zorg,xorg+size-1,yorg+size-1,zorg+size-1,blocktype) + "\n";
+        //now remove holes
+        int unit = size;
+        while (unit >= 3){
+            int w=unit/3;
+            for (int i=0; i<size;i=i+unit){
+                for(int j=0;j<size;j=j+unit){ 
+                    int x=xorg+i;
+                    int y=yorg+j; 
+                    genstring += GenCuboid(x+w,y+w,zorg,(x+2*w)-1,(y+2*w)-1,zorg+size-1,holetype) + "\n";
+                    y=yorg+i;
+                    int z=zorg+j;
+                    genstring += GenCuboid(xorg,y+w,z+w,xorg+size-1, (y+2*w)-1,(z+2*w)-1,holetype) + "\n";
+                    genstring += GenCuboid(x+w,yorg,z+w,(x+2*w)-1,yorg+size-1,(z+2*w)-1,holetype) + "\n";
+                }
+            }
+            unit = w; 
+        }
+        return genstring;
+    }
+    
+    
+    
     public static void main(String argv[]){
         // TODO code application logic here
-        
+           
         //XML da missão
         
         String missionXML = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalon=\"no\" ?>"
@@ -35,11 +67,12 @@ public class ExpMalmoMeca2 {
                     +"<ServerSection>"
                         +"<ServerInitialConditions>"
                             +"<Time><StartTime>12000</StartTime><AllowPassageOfTime>false</AllowPassageOfTime></Time>"
-                            +"<Weather>rain</Weather>"
+                            +"<Weather>clear</Weather>"
                         +"</ServerInitialConditions>"
                         +"<ServerHandlers>"
                             +"<FlatWorldGenerator generatorString=\"3;7,44*49,73,35:1,159:4,95:13,35:13,159:11,95:10,159:14,159:6,35:6,95:6;12;\"/>"
-                            +"<DrawingDecorator><DrawBlock  x=\"-27\" y=\"70\" z=\"0\" type=\"air\"/></DrawingDecorator>"
+                            +"<DrawingDecorator><DrawSphere x=\"-27\" y=\"70\" z=\"0\" radius=\"30\" type=\"air\"/>" 
+                            +"</DrawingDecorator>"
                             +"<ServerQuitFromTimeUp timeLimitMs=\"30000\"/>"
                             +"<ServerQuitWhenAnyAgentFinishes/>"
                         +"</ServerHandlers>"
@@ -62,7 +95,7 @@ public class ExpMalmoMeca2 {
         try {
             StringVector args = new StringVector();
             //args.add("JavaExamples_run_mission");
-            args.add("ExpMalmoMeca2");
+            args.add("ExpMalmoMeca3");
             for( String arg : argv )
                 args.add( arg );
             agent_host.parse( args );
@@ -99,7 +132,7 @@ public class ExpMalmoMeca2 {
             }
             
         } catch (Exception ex) {
-            Logger.getLogger(ExpMalmoMeca2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExpMalmoMeca3.class.getName()).log(Level.SEVERE, null, ex);
         }
         //MissionRecordSpec my_mission_record = new MissionRecordSpec();
         
@@ -142,15 +175,15 @@ public class ExpMalmoMeca2 {
         
         //Commands 
         agent_host.sendCommand("move 1");
-        agent_host.sendCommand("turn -0.5");
+        //agent_host.sendCommand("turn -0.5");
         agent_host.sendCommand("jump 1");
-        agent_host.sendCommand("pitch 1");
+        //agent_host.sendCommand("pitch 1");
         try {
             Thread.sleep(1);
         } catch (InterruptedException ex) {
-            Logger.getLogger(ExpMalmoMeca2.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ExpMalmoMeca3.class.getName()).log(Level.SEVERE, null, ex);
         }
-         agent_host.sendCommand("attack 1");
+        agent_host.sendCommand("attack 1");
         //Commands End
         
         //Loop until mission ends:
@@ -159,7 +192,7 @@ public class ExpMalmoMeca2 {
             try {
                 Thread.sleep((long) 0.1);
             } catch (InterruptedException ex) {
-                Logger.getLogger(ExpMalmoMeca2.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ExpMalmoMeca3.class.getName()).log(Level.SEVERE, null, ex);
             }
             world_state = agent_host.getWorldState();
             for( int i = 0; i < world_state.getErrors().size(); i++ ) {
