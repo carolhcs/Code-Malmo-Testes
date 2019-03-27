@@ -85,6 +85,19 @@ public class ExpMalmoMeca1b {
         System.out.println( "" );
         System.out.println( "Mission running" );
         
+        //Commands 
+        agent_host.sendCommand("move 1");
+        agent_host.sendCommand("turn -0.5");
+        agent_host.sendCommand("jump 1");
+        agent_host.sendCommand("pitch 1");
+        try {
+            Thread.sleep(1);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ExpMalmoMeca1.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        agent_host.sendCommand("attack 1");
+        //Commands End
+
         //Loop until mission ends:
         do {
             
